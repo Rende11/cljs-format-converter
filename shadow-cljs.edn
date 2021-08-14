@@ -1,0 +1,15 @@
+{:source-paths ["src" "test"]
+ :dependencies [[cider/cider-nrepl "0.26.0"]
+                [reagent "1.0.0"]
+                [re-frame "1.2.0"]
+                [re-frisk "1.5.1"]]
+ :nrepl        {:port 4444}
+ :dev-http     {3030 "public"}
+ :builds
+ {:app
+  {:devtools {:preloads [re-frisk.preload]}
+   :target :browser
+   :modules {:main {:init-fn converter.app/init}}}
+  :test
+  {:target    :node-test
+   :output-to "out/node-tests.js"}}}

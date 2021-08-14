@@ -1,0 +1,14 @@
+{
+  "name": "converter",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "shadow-cljs": "2.14.2"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "tailwindcss": "^2.2.4"
+  }
+}
