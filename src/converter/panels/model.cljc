@@ -93,6 +93,13 @@
       (prn e)
       "")))
 
+(defn source->output [value from to]
+  (->> value
+          (try-parse from)
+          (try-generate to)
+          (align to)
+          str/trim))
+
 
 (rf/reg-sub
  ::transformed-value
@@ -100,11 +107,7 @@
    (let [value (get-in db [:source :value] "")
          from (get-in db [:source :format] :json)
          to (get-in db [:output :format] :json)]
-     (->> value
-          (try-parse from)
-          (try-generate to)
-          (align to)
-          str/trim))))
+     (source->output value from to))))
 
 
 
@@ -120,4 +123,37 @@
  (fn [{db :db} [_ format]]
    {:db (assoc-in db [:output :format] format)
     :dispatch [::location/redirect-merge {"to" (name format)}]}))
+
+
+(rf/reg-fx
+ ::copy-fx
+ (fn [value]
+   (->
+    (js/navigator.clipboard.writeText value)
+    (.catch (fn [_] (js/Error. "Copy to clipboard failed"))))))
+
+(rf/reg-event-fx
+ ::copy
+ (fn [{db :db} _]
+   (let [value (get-in db [:source :value] "")
+         from (get-in db [:source :format] :json)
+         to (get-in db [:output :format] :json)]
+     {::copy-fx (source->output value from to)
+      :dispatch [::toggle [:copy?]]
+      ::debounce [[::toggle [:copy?]] 800]})))
+
+(rf/reg-event-db
+ ::toggle
+ (fn [db [_ path]]
+   (update-in db path not)))
+
+(rf/reg-sub
+ ::copy?
+ (fn [db _]
+   (get-in db [:copy?])))
+
+(rf/reg-fx
+ ::debounce
+ (fn [[payload timeout]]
+   (js/setTimeout rf/dispatch timeout payload)))
 

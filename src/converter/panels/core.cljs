@@ -26,7 +26,7 @@
             [:button.tab.py-1.px-2.mx-1.cursor-pointer.border.bg-white
              {:key f
               :class
-              (str "hover:border-blue-300 hover:text-blue-400 
+              (str "transition hover:border-blue-300 hover:text-blue-400
                   active:text-blue-500 active:border-blue-400 active:shadow-md"
                    (when (= current-format f)
                      " active text-blue-400"))
@@ -38,7 +38,8 @@
 
 
 (defn right []
-  (let [value (rf/subscribe [::model/transformed-value])]
+  (let [value (rf/subscribe [::model/transformed-value])
+        copy? (rf/subscribe [::model/copy?])]
     [:div.wrapper.m-5.rounded.shadow.flex.flex-col.relative {:class "w-1/2"}
      [:div.area-header.bg-blue-50.p-2.flex.items-baseline
       [:div.header-name.px-2.mx-1.font-bold "Output"]
@@ -50,17 +51,23 @@
              [:button.tab.py-1.px-2.mx-1.cursor-pointer.border.bg-white
               {:key f
                :class
-               (str "hover:border-blue-300 hover:text-blue-400 
+               (str "transition hover:border-blue-300 hover:text-blue-400
                   active:text-blue-500 active:border-blue-400 active:shadow-md"
                     (when (= output-format f)
                       " active text-blue-400"))
                :on-click #(rf/dispatch [::model/change-output-format f])}
               (str/upper-case (name f))]))
-          [:button.tab.py-1.px-2.mx-1.cursor-pointer.border.bg-white
+          [:button.tab.copy-btn.py-1.px-2.mx-1.cursor-pointer.border.bg-white.transition
            {:key "icon-id"
-            :class "hover:border-blue-300 hover:text-blue-400 
-                    active:text-blue-500 active:border-blue-400 active:shadow-md"}
-           copy-icon]])]]
+            :class (str "hover:border-blue-300 hover:text-blue-400
+                    active:text-blue-500 active:border-blue-400 active:shadow-md"
+                    (when @copy?
+                      " pointer-events-none text-green-400 border-green-400"))
+            :on-click (fn [e]
+                        (rf/dispatch [::model/copy e]))}
+           (if @copy?
+             "Copied!"
+             copy-icon)]])]]
      [:textarea.w-full.resize-none.outline-none.rounded-b.p-3.px-6.flex-grow
       {:value (.toString @value)
        :readOnly true}]]))
