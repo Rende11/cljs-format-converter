@@ -138,12 +138,9 @@
 (rf/reg-event-fx
  ::copy
  (fn [{db :db} _]
-   (let [value (get-in db [:source :value] "")
-         from (get-in db [:source :format] :json)
-         to (get-in db [:output :format] :json)]
-     {::copy-fx (source->output value from to)
-      :dispatch [::toggle [:copy?]]
-      ::debounce [[::toggle [:copy?]] 800]})))
+   {::copy-fx (get-in db [:output :value]) 
+    :dispatch [::toggle [:copy?]]
+    ::debounce [[::toggle [:copy?]] 800]}))
 
 (rf/reg-event-db
  ::toggle
