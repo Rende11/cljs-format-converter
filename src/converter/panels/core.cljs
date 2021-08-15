@@ -15,7 +15,8 @@
      :strokeLinecap "round"}]])
 
 (defn left []
-  (let [value (rf/subscribe [::model/source-value])]
+  (let [value (rf/subscribe [::model/source-value])
+        err (rf/subscribe [::model/error])]
     [:div.wrapper.m-5.rounded.shadow.flex.flex-col {:class "w-1/2"}
      [:div.area-header.bg-blue-50.p-2.flex.items-baseline
       [:div.header-name.px-2.mx-1.font-bold "Source"]
@@ -34,7 +35,9 @@
              (str/upper-case (name f))])))]]
      [:textarea.w-full.resize-none.outline-none.rounded-b.p-3.px-6.flex-grow
       {:on-change #(rf/dispatch [::model/update-source-value (-> % .-target .-value)])
-       :value (.toString @value)}]]))
+       :value (.toString @value)}]
+     (when-let [err-msg @err]
+       [:div.err.px-2.py-1.transition-all err-msg])]))
 
 
 (defn right []

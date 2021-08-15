@@ -90,6 +90,8 @@
   (try
     [(source->output value from to)]
     (catch js/Error e
+      (prn (.-message e))
+      (prn e)
       [nil (.-message e)])))
 
 (rf/reg-event-fx
@@ -99,10 +101,10 @@
          to (get-in db [:output :format])
          [output-val err] (convert value from to)]
      (if err
-       {:db (assoc-in db [:output :err] err)}
+       {:db (assoc-in db [:source :err] err)}
        {:db (-> db
                 (assoc-in [:output :value] output-val)
-                (assoc-in [:output :err] nil))}))))
+                (assoc-in [:source :err] nil))}))))
 
 
 (rf/reg-event-fx
@@ -157,3 +159,8 @@
  (fn [[payload timeout]]
    (js/setTimeout rf/dispatch timeout payload)))
 
+
+(rf/reg-sub
+ ::error
+ (fn [db _]
+   (get-in db [:source :err])))
