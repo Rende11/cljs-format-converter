@@ -3,6 +3,7 @@
             [js-yaml :as yaml]
             [clojure.string :as str]
             [cljs.reader :as reader]
+            [cljs.pprint :refer [pprint]]
             [converter.location :as location]))
 
 (def formats
@@ -74,7 +75,7 @@
 
 (defmulti align (fn [format _] format))
 (defmethod align :edn [_ value]
-  (with-out-str (cljs.pprint/pprint value)))
+  (with-out-str (pprint value)))
 
 (defmethod align :default [_ value]
   value)
