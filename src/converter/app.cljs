@@ -15,6 +15,12 @@
 (defn ^:dev/after-load render []
   (rdom/render [app] (.getElementById js/document "root")))
 
+(def default-js
+  "{ message: \"Hello!\",
+  data: { one: 1,
+              pi: 3.14 },
+  items: [ \"Let's start!\", \"Yeah!\" ] }")
+
 
 (rf/reg-event-fx
  ::initialize
@@ -22,21 +28,21 @@
  (fn [cofx _]
    (let [search (location/parse-search-params (get-in cofx [:location :search]))
          from (or (keyword (get search "from")) :json)
-         to (or (keyword (get search "to")) :yaml)]
-     (cond-> 
-         {:db {:source {:format from 
-                        :value (if (= :js from)
-                                 "{ message: \"Hello!\",
-  data: { one: 1,
-              pi: 3.14 },
-  items: [ \"Let's start!\", \"Yeah!\" ] }"
+         to (or (keyword (get search "to")) :yaml)
+         default-source (if (= :js from)
+                                 default-js
                                  (->> (model/generate from  {:message "Hello!"
                                                              :data {:one 1
                                                                     :pi 3.14}
                                                              :items ["Let's start!" "Yeah!"]})
                                       (model/align from)
-                                      (.toString)))}
-               :output {:format to}}}
+                                      (.toString)))
+         default-output (model/source->output default-source from to)]
+     (cond->
+         {:db {:source {:format from
+                        :value default-source}
+               :output {:format to
+                        :value default-output}}}
        (not search) (assoc :dispatch [::location/redirect {"from" "json" "to" "yaml"}])))))
 
 (defn ^:export init

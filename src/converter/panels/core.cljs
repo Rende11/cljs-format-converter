@@ -38,7 +38,7 @@
 
 
 (defn right []
-  (let [value (rf/subscribe [::model/transformed-value])
+  (let [value (rf/subscribe [::model/output-value])
         copy? (rf/subscribe [::model/copy?])]
     [:div.wrapper.m-5.rounded.shadow.flex.flex-col.relative {:class "w-1/2"}
      [:div.area-header.bg-blue-50.p-2.flex.items-baseline

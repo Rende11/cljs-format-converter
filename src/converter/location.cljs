@@ -33,7 +33,7 @@
 (rf/reg-event-fx
  ::redirect-merge
  [(rf/inject-cofx ::location)]
- (fn [{location :location :as cofx} [_ params]]
+ (fn [{location :location} [_ params]]
    (let [merged-params (merge (:search-parsed location) params)
          search-string (str "?" (generate-search-params merged-params))]
      {::push-params search-string})))

@@ -3,17 +3,11 @@
             [js-yaml :as yaml]
             [clojure.string :as str]
             [cljs.reader :as reader]
-            [cljs.pprint :refer [pprint]]
+            [cljs.pprint :as p]
             [converter.location :as location]))
 
 (def formats
   [:json :yaml :edn :js])
-
-(rf/reg-event-fx
- ::update-source-value
- (fn [{db :db} [_ value]]
-   {:db (assoc-in db [:source :value] value)}))
-
 
 (rf/reg-sub
  ::source-value
@@ -26,9 +20,15 @@
    (get-in db [:source :format])))
 
 (rf/reg-sub
+ ::output-value
+ (fn [db _]
+   (get-in db [:output :value] "")))
+
+(rf/reg-sub
  ::output-format
  (fn [db _]
    (get-in db [:output :format])))
+
 
 (defn sanitize-json [value]
   (or (not-empty value) "\"\""))
@@ -75,55 +75,57 @@
 
 (defmulti align (fn [format _] format))
 (defmethod align :edn [_ value]
-  (with-out-str (pprint value)))
+  (with-out-str (p/pprint value)))
 
-(defmethod align :default [_ value]
-  value)
-
-(defn try-parse [format value]
-  (try
-    (parse format value)
-    (catch js/Error e
-      (prn e)
-      "")))
-
-(defn try-generate [format value]
-  (try
-    (generate format value)
-    (catch js/Error e
-      (prn e)
-      "")))
+(defmethod align :default [_ value] value)
 
 (defn source->output [value from to]
-  (->> value
-          (try-parse from)
-          (try-generate to)
-          (align to)
-          str/trim))
+  (some->> value
+           (parse from)
+           (generate to)
+           (align to)
+           (str/trim)))
+
+(defn convert [value from to]
+  (try
+    [(source->output value from to)]
+    (catch js/Error e
+      [nil (.-message e)])))
+
+(rf/reg-event-fx
+ ::update-output-value
+ (fn [{db :db} [_ value]]
+   (let [from (get-in db [:source :format])
+         to (get-in db [:output :format])
+         [output-val err] (convert value from to)]
+     (if err
+       {:db (assoc-in db [:output :err] err)}
+       {:db (-> db
+                (assoc-in [:output :value] output-val)
+                (assoc-in [:output :err] nil))}))))
 
 
-(rf/reg-sub
- ::transformed-value
- (fn [db _]
-   (let [value (get-in db [:source :value] "")
-         from (get-in db [:source :format] :json)
-         to (get-in db [:output :format] :json)]
-     (source->output value from to))))
-
-
+(rf/reg-event-fx
+ ::update-source-value
+ (fn [{db :db} [_ value]]
+   {:db (-> db
+            (assoc-in [:source :value] value))
+    :dispatch [::update-output-value value]}))
 
 
 (rf/reg-event-fx
  ::change-source-format
  (fn [{db :db} [_ format]]
    {:db (assoc-in db [:source :format] format)
-    :dispatch [::location/redirect-merge {"from" (name format)}]}))
+    :dispatch-n [[::location/redirect-merge {"from" (name format)}]
+                 [::update-output-value (get-in db [:source :value])]]}))
 
 (rf/reg-event-fx
  ::change-output-format
  (fn [{db :db} [_ format]]
    {:db (assoc-in db [:output :format] format)
-    :dispatch [::location/redirect-merge {"to" (name format)}]}))
+    :dispatch-n [[::location/redirect-merge {"to" (name format)}]
+                 [::update-output-value (get-in db [:source :value])]]}))
 
 
 (rf/reg-fx
