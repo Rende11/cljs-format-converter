@@ -12,6 +12,7 @@ Demo is avaliable [here](https://cljs-format-converter.vercel.app)
 * Use code/text editors
 * Github link
 * Add analytics?
+* Fix keyx order changes
 
 
 ## Usefull commands
