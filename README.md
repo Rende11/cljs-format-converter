@@ -10,7 +10,7 @@ Demo is avaliable [here](https://cljs-format-converter.vercel.app)
 * UI/UX improvements
 * Dark/Light theme
 * Use code/text editors
-* Github link
+* ~~Github link~~
 * Add analytics?
 * Fix keyx order changes
 
