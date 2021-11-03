@@ -17,7 +17,7 @@
 (defn left []
   (let [value (rf/subscribe [::model/source-value])
         err (rf/subscribe [::model/error])]
-    [:div.wrapper.m-5.rounded.shadow.flex.flex-col {:class "w-1/2"}
+    [:div.wrapper.m-5.mb-1.rounded.shadow.flex.flex-col {:class "w-1/2"}
      [:div.area-header.bg-blue-50.p-2.flex.items-baseline
       [:div.header-name.px-2.mx-1.font-bold "Source"]
       [:div.header-tabs.flex.ml-auto
@@ -43,7 +43,7 @@
 (defn right []
   (let [value (rf/subscribe [::model/output-value])
         copy? (rf/subscribe [::model/copy?])]
-    [:div.wrapper.m-5.rounded.shadow.flex.flex-col.relative {:class "w-1/2"}
+    [:div.wrapper.m-5.mb-1.rounded.shadow.flex.flex-col.relative {:class "w-1/2"}
      [:div.area-header.bg-blue-50.p-2.flex.items-baseline
       [:div.header-name.px-2.mx-1.font-bold "Output"]
       [:div.header-tabs.flex.ml-auto

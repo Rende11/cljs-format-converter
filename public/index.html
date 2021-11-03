@@ -5,8 +5,14 @@
     <title>Converter</title>
     <link rel="stylesheet" href="/css/styles.css" type="text/css">
   </head>
-  <body>
-    <div id="root"></div>
-    <script src="/js/main.js"></script>
+  <body class="bg-gray-100">
+    <div id="app-wrap" class="min-h-screen flex flex-col justify-between">
+      <div id="root" class="flex-grow flex"></div>
+      <script src="/js/main.js"></script>
+      <footer class="flex flex-row justify-center">
+        <a class="box-border px-2 mx-3 my-1 text-sm hover:underline text-blue-400 hover:text-blue-500 visited:text-purple-600" target="_blank" href="https://github.com/Rende11/cljs-format-converter">source code</a>
+        <a class="box-border px-2 mx-3 my-1 text-sm hover:underline text-blue-400 hover:text-blue-500 visited:text-purple-600" target="_blank" href="https://github.com/Rende11/cljs-format-converter/issues">report a bug</a>
+      </footer>
+    </div>
   </body>
 </html>

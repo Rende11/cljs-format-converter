@@ -7,7 +7,7 @@
 
 (defn app
   []
-  [:div#app.bg-gray-100.min-h-screen.flex.flex-auto.flex-row.justify-between.text-gray-600
+  [:div#app.bg-gray-100.flex.flex-auto.flex-row.justify-between.text-gray-600
    [left]
    [right]])
 
