@@ -12,7 +12,7 @@
 (rf/reg-sub
  ::source-value
  (fn [db _]
-   (get-in db [:source :value] "")))
+   (or (get-in db [:source :value]) "")))
 
 (rf/reg-sub
  ::source-format
@@ -22,7 +22,7 @@
 (rf/reg-sub
  ::output-value
  (fn [db _]
-   (get-in db [:output :value] "")))
+   (or (get-in db [:output :value]) "")))
 
 (rf/reg-sub
  ::output-format
