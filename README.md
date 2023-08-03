@@ -2,6 +2,7 @@
 
 Application for data conversion.
 Supported formats - JSON, YAML, EDN, JavaScript Object.
+![Kapture 2023-08-03 at 23 24 33](https://github.com/Rende11/cljs-format-converter/assets/10757633/94d4567b-ab22-4adb-ba70-3a0048943f9e)
 
 Demo is avaliable [here](https://cljs-format-converter.vercel.app)
 
